@@ -1,0 +1,137 @@
+@page
+@model WorkShop.Xncf.Message.Areas.Admin.Pages.User.IndexModel
+@{
+    ViewData["Title"] = "User列表页面";
+    Layout = "_Layout_Vue";
+}
+
+@section Style{
+    <link href="~/css/Message/User/User.css" rel="stylesheet" />
+}
+
+@section HeaderContent{
+    <style>
+        .el-dialog .el-form-item .el-input,
+        .el-dialog .el-form-item .el-textarea {
+            width: 30rem;
+        }
+
+        .el-form-item__content {
+            width: 30rem;
+        }
+
+        .filter-condition {
+            margin-bottom: 1rem;
+        }
+        .hidden{ display: none; }
+    </style>
+}
+
+@section breadcrumbs {
+    <el-breadcrumb-item>扩展模块</el-breadcrumb-item>
+    <el-breadcrumb-item>User管理</el-breadcrumb-item>
+    <el-breadcrumb-item>User列表</el-breadcrumb-item>
+}
+
+<div>
+    <div class="admin-role">
+        <el-row class="filter-condition" :gutter="18">
+            <el-col :span="4"><el-input v-model="keyword" placeholder="请输入关键字"></el-input></el-col>
+            <el-col :span="6">
+                <el-button type="primary" @@click="handleSearch()">查询</el-button>
+                <el-button type="primary" @@click="resetCondition()">重置</el-button>
+            </el-col>
+        </el-row>
+        <div class="filter-container">
+            <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @@click="handleEdit('','','add')">增加User</el-button>
+        </div>
+        <el-table :data="tableData"
+                  style="width: 100%;margin-bottom: 20px;"
+                  row-key="id"
+                  border
+                  ref="multipleTable"
+                  @@selection-change="handleSelectionChange">
+            <el-table-column label="序号" width="65">
+                <template scope="scope">
+                    <el-radio :label="scope.$index" v-model="radio" @@change.native="getCurrentRow(scope.row)"></el-radio>
+                </template>
+            </el-table-column>
+
+                     <el-table-column prop="nickName" align="left" label="用户昵称"></el-table-column>
+                     <el-table-column prop="account" align="left" label="用户账户"></el-table-column>
+                     <el-table-column prop="password" align="left" label="密码"></el-table-column>
+                     <el-table-column prop="name" align="left" label="姓名"></el-table-column>
+                     <el-table-column prop="gender" align="left" label="性别"></el-table-column>
+                     <el-table-column prop="balance" align="left" label="账户余额"></el-table-column>
+                     <el-table-column prop="openId" align="left" label="微信OpenId"></el-table-column>
+            <el-table-column align = "center"
+                             label="添加时间">
+                <template slot-scope="scope">
+                    {{formaTableTime(scope.row.addTime)}}
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" fixed="right" width="150">
+                <template slot-scope="scope">
+                    <el-button size="mini"
+                        type="primary"
+                        @@click="handleEdit(scope.$index, scope.row,'edit')">编辑</el-button>
+                    <el-popconfirm placement="top" title="确认删除此作品吗？" @@on-confirm="handleDelete(scope.$index, scope.row)">
+                        <el-button size="mini" type="danger" slot="reference">删除</el-button>
+                    </el-popconfirm>
+                </template>
+            </el-table-column>
+        </el-table>
+              
+        <pagination :total="paginationQuery.total"
+                :page.sync="listQuery.pageIndex"
+                :limit.sync="listQuery.pageSize"
+                @@pagination="getList"></pagination>
+        <!--编辑、新增-->
+         <el-dialog :title="dialog.title"
+                   :visible.sync="dialog.visible"
+                   :close-on-click-modal="false"
+                   width="700px">
+            <el-form ref="dataForm"
+                     :rules="dialog.rules"
+                     :model="dialog.data"
+                     :disabled="dialog.disabled"
+                     label-position="left"
+                     label-width="100px"
+                     style="max-width: 200px; margin-left:50px;">
+                     <el-form-item label="用户昵称" prop="nickName">
+                         <el-input v-model="dialog.data.nickName" clearable placeholder="请输入用户昵称"/>
+                     </el-form-item>
+
+                     <el-form-item label="用户账户" prop="account">
+                         <el-input v-model="dialog.data.account" clearable placeholder="请输入用户账户"/>
+                     </el-form-item>
+
+                     <el-form-item label="密码" prop="password">
+                         <el-input v-model="dialog.data.password" clearable placeholder="请输入密码"/>
+                     </el-form-item>
+
+                     <el-form-item label="姓名" prop="name">
+                         <el-input v-model="dialog.data.name" clearable placeholder="请输入姓名"/>
+                     </el-form-item>
+
+                     <el-form-item label="性别" prop="gender">
+                         <el-input v-model="dialog.data.gender" clearable placeholder="请输入性别"/>
+                     </el-form-item>
+
+                     <el-form-item label="微信OpenId" prop="openId">
+                         <el-input v-model="dialog.data.openId" clearable placeholder="请输入微信OpenId"/>
+                     </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @@click="dialog.visible=false">取消</el-button>
+                <el-button :loading="dialog.updateLoading" :disabled="dialog.disabled" type="primary" @@click="updateData">确认</el-button>
+            </div>
+        </el-dialog>
+    </div>
+</div>
+@section scripts
+{
+    <script src="~/js/Basic/ml.js"></script>
+
+    <script src="~/js/Message/Pages/User/user.js"></script>
+}
