@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Senparc.Ncf.Core.Cache;
 using WorkShop.Xncf.Message.Models.DatabaseModel.VO;
 
-namespace Senparc.Xncf.Admin.Controllers
+namespace WorkShop.Xncf.Message.Controllers
 {
     public class BaseController : ControllerBase
     {

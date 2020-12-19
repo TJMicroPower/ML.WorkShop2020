@@ -25,7 +25,7 @@ namespace WorkShop.Xncf.Message.Services
             return selectListItems;
         }
 
-        public async Task CreateOrUpdateAsync(UserDto dto)
+        public async Task<User> CreateOrUpdateAsync(UserDto dto)
         {
             User user;
             if (String.IsNullOrEmpty(dto.Id))
@@ -38,6 +38,7 @@ namespace WorkShop.Xncf.Message.Services
                 user.Update(dto);
             }
             await SaveObjectAsync(user);
+            return user;
         }
 
     }

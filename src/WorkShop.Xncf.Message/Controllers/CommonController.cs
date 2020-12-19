@@ -17,14 +17,14 @@ using Senparc.CO2NET.Cache.CsRedis;
 using Senparc.Xncf.Admin.Utils;
 using WorkShop.Xncf.Message.Models.DatabaseModel.Config;
 
-namespace Senparc.Xncf.Admin.Controllers
+namespace WorkShop.Xncf.Message.Controllers
 {
     /// <summary>
     /// 文件上传接口
     /// </summary>
     [Route("api/v{version:apiVersion}/[controller]/[action]")]
     [ApiController]
-    [ApiVersion("1")]
+    [ApiVersion("2")]
     public class CommonController : BaseController
     {
         private readonly IOptionsMonitor<StaticResourceSetting> staticResourceSetting;

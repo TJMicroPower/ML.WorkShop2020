@@ -25,7 +25,7 @@ namespace WorkShop.Xncf.Message.Services
             return selectListItems;
         }
 
-        public async Task CreateOrUpdateAsync(MessagesDto dto)
+        public async Task<Messages> CreateOrUpdateAsync(MessagesDto dto)
         {
             Messages messages;
             if (String.IsNullOrEmpty(dto.Id))
@@ -38,6 +38,7 @@ namespace WorkShop.Xncf.Message.Services
                 messages.Update(dto);
             }
             await SaveObjectAsync(messages);
+            return messages;
         }
 
     }
