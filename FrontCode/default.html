@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkShop站内信</title>
+    <link href="/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #logn_btn {
+            /* position: fixed; */
+            margin-top: 240px;
+            /* top: 45%; */
+        }
+
+        .list-group-item button {
+            /* float: right; */
+            margin-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h4>NCF WorkShop</h4>
+        <ul class="list-group">
+
+        </ul>
+    </div>
+    <div class="modal" id="myModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">消息详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script src="jquery-3.5.1.min.js"></script>
+<script src="bootstrap.bundle.min.js"></script>
+<script>
+    let userInfo = {};
+    $(function () {
+
+        userInfo = JSON.parse(window.localStorage.getItem('sessionId') || '');
+        if (!userInfo.id) {
+            window.location.href = '/login.html';
+        }
+        $.get('/api/v1/message/list', { pageIndex: 1, pageSize: 20, userId: userInfo.id }).then(function (data) {
+            const responseData = data.data.list;
+            buildListGroupItem(responseData);
+            bindMessage();
+        });
+    })
+    function bindMessage() {
+        $('.bi-trash-fill').off('click').on('click', function () {
+            const id = $(this).parent().data('id')
+            $.get('/api/v1/message/delete', { userId: userInfo.id, messageDetailId: id }).then(e => {
+                bindMessage();
+            })
+        });
+
+
+
+
+        $('.bi-file-code').off('click').on('click', function () {
+            const id = $(this).parent().data('id')
+            $('.modal-body p').text('');
+            $('.modal-title').text('');
+            const myModal = new bootstrap.Modal(document.getElementById('myModal'), {
+                keyboard: false
+            });
+            myModal.toggle();
+            $.get('/api/v1/message/detail', { id: id }).then(r => {
+                $('.modal-body p').text(r.data.content);
+                $('.modal-title').text(r.data.title + ' 详情');
+            });
+        })
+    }
+    function buildListGroupItem(row) {
+        row.forEach(function (ele) {
+            let htmlStr = `<li href="#" data-id="${ele.id}" class="list-group-item">
+                ${ele.title}
+                <button class="bi-file-code">详情</button>
+                <button class="bi-trash-fill">删除</button>
+                </li>`
+            $('.list-group').append(htmlStr);
+        })
+    }
+</script>
