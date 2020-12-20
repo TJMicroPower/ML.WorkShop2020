@@ -20,7 +20,7 @@ namespace WorkShop.Xncf.Message.Models.DatabaseModel.Dto
             Title = title;
             Content = content;
             Method = method;
-            SendTime = sendTime;
+            SendTime = DateTime.Now;
             Type = type;
             Status = status;
         }
@@ -59,5 +59,13 @@ namespace WorkShop.Xncf.Message.Models.DatabaseModel.Dto
         /// </summary>
         public int Status { get; set; }
 
+    }
+
+    public class MessagesExtendDto : MessagesDto
+    {
+        /// <summary>
+        /// 接收用户
+        /// </summary>
+        public string[] RelationUser { get; set; }
     }
 }

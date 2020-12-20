@@ -28,31 +28,32 @@ new Vue({
                 keyword: '',
                 orderField: ''
             },
-            categoryData:[],
-            keyword:'',
+            userData: [],
+            categoryData: [],
+            keyword: '',
             multipleSelection: '',
             radio: '',
             props: { multiple: true },
             // 表格数据
-            tableData:[],
+            tableData: [],
             uid: '',
-            fileList:[],
+            fileList: [],
             dialogImageUrl: '',
             dialogVisible: false,
             dialog:
             {
-                title: '新增作品',
+                title: '新增消息',
                 visible: false,
                 data:
                 {
-                    id:'',title: '', content: '', method: 0, sendTime: '', type: 0, status: 0
+                    id: '', title: '', content: '', method: 0, sendTime: '', type: 0, status: 0, relationUser: []
                 },
                 rules:
                 {
                     name:
-                    [
-                        { required: true, message: "作品名称为必填项", trigger: "blur" }
-                    ]
+                        [
+                            { required: true, message: "消息名称为必填项", trigger: "blur" }
+                        ]
                 },
                 updateLoading: false,
                 disabled: false,
@@ -60,18 +61,18 @@ new Vue({
             }
         }
     },
-    created: function() {
+    created: function () {
         let that = this
         that.getList();
+        that.getUserList();
     },
     watch:
     {
-        'dialog.visible': function(val, old) {
+        'dialog.visible': function (val, old) {
             // 关闭dialog，清空
-            if (!val)
-            {
+            if (!val) {
                 this.dialog.data = {
-                    id:'',title: '', content: '', method: 0, sendTime: '', type: 0, status: 0
+                    id: '', title: '', content: '', method: 0, type: 0, status: 0, relationUser: []
                 };
                 this.dialog.updateLoading = false;
                 this.dialog.disabled = false;
@@ -81,7 +82,7 @@ new Vue({
     methods:
     {
         handleRemove(file, fileList) {
-            log(file, fileList,2);
+            log(file, fileList, 2);
         },
         handlePictureCardPreview(file) {
             let that = this
@@ -92,11 +93,10 @@ new Vue({
             let that = this
             // 上传成功
             that.fileList = fileList;
-            log('上传成功',fileList.length,2);
-            log('res',res,2);
+            log('上传成功', fileList.length, 2);
+            log('res', res, 2);
 
-            if (res.code == 200)
-            {
+            if (res.code == 200) {
                 that.$notify({
                     title: '成功',
                     message: '恭喜你，上传成功',
@@ -104,8 +104,7 @@ new Vue({
                 });
                 that.dialog.data.cover = res.data;
             }
-            else
-            {
+            else {
                 that.$notify.error({
                     title: '失败',
                     message: '上传失败，请重新上传'
@@ -120,15 +119,13 @@ new Vue({
                 message: '上传失败，请重新上传'
             });
         },
-        // 获取所有作品
-        async getList()
-        {
+        // 获取所有消息
+        async getList() {
             let that = this
             //that.uid = resizeUrl().uid
             let { pageIndex, pageSize, keyword, orderField } = that.listQuery;
-            log('orderField',orderField,1);
-            if (orderField == '' || orderField == undefined)
-            {
+            log('orderField', orderField, 1);
+            if (orderField == '' || orderField == undefined) {
                 orderField = 'AddTime Desc';
             }
             if (that.keyword != '' && that.keyword != undefined) {
@@ -140,34 +137,37 @@ new Vue({
                 that.paginationQuery.total = res.data.data.totalCount;
             });
         },
-        async getCategoryList()
-        {
+        async getCategoryList() {
             let that = this
             //获取分类列表数据
             await service.get('/Admin/Products/Index?handler=ProductsCategory').then(res => {
                 that.categoryData = res.data.data.list;
-                log('categoryData',res,2);
+                log('categoryData', res, 2);
             });
         },
-        // 编辑 // 新增作品 // 增加下一级
-        handleEdit(index, row, flag)
-        {
+        async getUserList() {
+            let that = this
+            await service.get(`/Admin/User/Index?handler=SelUser`).then(res => {
+                that.userData = res.data.data.list;
+            });
+        },
+        // 编辑 // 新增消息 // 增加下一级
+        handleEdit(index, row, flag) {
             let that = this
             that.dialog.visible = true;
             //获取分类列表数据
             //that.getCategoryList();
-            if (flag === 'add')
-            {
+            if (flag === 'add') {
                 // 新增
-                that.dialog.title = '新增作品';
+                that.dialog.title = '新增消息';
                 that.dialogImageUrl = '';
-                //that.$refs['bodyEditor'].editor.setData('');
+                that.dialog.data.relationUser = [];
                 return;
             }
             // 编辑
-            let { id,title, content, method, sendTime, type, status } = row;
+            let { id, title, content, method, type, status, relationUser } = row;
             that.dialog.data = {
-                id,title, content, method, sendTime, type, status
+                id, title, content, method, type, status, relationUser
             };
             //if (cover != '' && cover != undefined)
             //{
@@ -186,56 +186,48 @@ new Vue({
             //that.recursionFunc(row, this.categoryData, x);
             //that.dialog.data.categoryId = x;
 
-            if (flag === 'edit')
-            {
-                that.dialog.title = '编辑作品';
+            if (flag === 'edit') {
+                that.dialog.title = '编辑消息';
             }
         },
         // 设置父级菜单默认显示 递归
-        recursionFunc(row, source, dest)
-        {
-            if (row.categoryId === null)
-            {
+        recursionFunc(row, source, dest) {
+            if (row.categoryId === null) {
                 return;
             }
-            for (let i in source)
-            {
+            for (let i in source) {
                 let ele = source[i];
-                if (row.categoryId === ele.id)
-                {
+                if (row.categoryId === ele.id) {
                     this.recursionFunc(ele, this.categoryData, dest);
                     dest.push(ele.id);
                 }
-                else
-                {
+                else {
                     this.recursionFunc(row, ele.children, dest);
                 }
             }
         },
         // 更新新增、编辑
-        updateData()
-        {
+        updateData() {
             let that = this
             that.dialog.updateLoading = true;
             that.$refs['dataForm'].validate(valid => {
                 //that.editorData = that.$refs['bodyEditor'].editor.getData()
                 //that.dialog.data.body = that.$refs['bodyEditor'].editor.getData();
                 // 表单校验
-                if (valid)
-                {
+                if (valid) {
                     that.dialog.updateLoading = true;
                     let data = {
-                        Id: that.dialog.data.id,                        Title: that.dialog.data.title,
+                        Id: that.dialog.data.id,
+                        Title: that.dialog.data.title,
                         Content: that.dialog.data.content,
-                        Method: that.dialog.data.method,
-                        SendTime: that.dialog.data.sendTime,
-                        Type: that.dialog.data.type,
-                        Status: that.dialog.data.status
+                        Method: parseInt(that.dialog.data.method),
+                        Type: parseInt(that.dialog.data.type),
+                        Status: 1,
+                        RelationUser: that.dialog.data.relationUser,
                     };
                     console.log('add-' + JSON.stringify(data));
                     service.post("/Admin/Messages/Edit?handler=Save", data).then(res => {
-                        if (res.data.success)
-                        {
+                        if (res.data.success) {
                             that.getList();
                             that.$notify({
                                 title: "Success",
@@ -254,10 +246,9 @@ new Vue({
             let that = this
             let ids = [row.id];
             service.post("/Admin/Messages/edit?handler=Delete", ids).then(res => {
-                if (res.data.success)
-                    {
-                        that.getList();
-                        that.$notify({
+                if (res.data.success) {
+                    that.getList();
+                    that.$notify({
                         title: "Success",
                         message: "删除成功",
                         type: "success",
@@ -294,21 +285,46 @@ new Vue({
             that.keyword = '';
         },
         setRecommendFormat(row, column, cellValue, index) {
-            if (cellValue)
-            {
+            if (cellValue) {
                 return "Y";
             }
             return "N";
         },
         setBodyFormat(row, column, cellValue, index) {
-            if (cellValue == undefined)
-            {
+            if (cellValue == undefined) {
                 return '-';
             }
-            else
-            {
+            else {
                 return cellValue.substring(0, 16);
             }
+        },
+        setMethodFormat(row, column, cellValue, index) {
+            if (cellValue == 1) {
+                return '是';
+            }
+            else {
+                return '否';
+            }
+        },
+        setTypeFormat(row, column, cellValue, index) {
+            if (cellValue == 1) {
+                return '是';
+            }
+            else {
+                return '否';
+            }
+        },
+        setStatusFormat(row, column, cellValue, index) {
+            if (cellValue == 1) {
+                return '已发送';
+            }
+            else {
+                return '未发送';
+            }
+        },
+        selectUsers(event) {
+            let that = this
+            //console.log(`selectProducts----${JSON.stringify(that.productRelationData)}`)
         },
         setContentFormat(row, column, cellValue, index) {
             if (cellValue == undefined) {

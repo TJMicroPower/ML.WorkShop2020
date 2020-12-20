@@ -42,9 +42,9 @@
                 <el-button type="primary" @@click="resetCondition()">重置</el-button>
             </el-col>
         </el-row>
-        <div class="filter-container">
+        @*<div class="filter-container">
             <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @@click="handleEdit('','','add')">增加MessageDetail</el-button>
-        </div>
+        </div>*@
         <el-table :data="tableData"
                   style="width: 100%;margin-bottom: 20px;"
                   row-key="id"
@@ -59,7 +59,7 @@
 
                      <el-table-column prop="messageId" align="left" label="消息Id"></el-table-column>
                      <el-table-column prop="userId" align="left" label="用户Id"></el-table-column>
-                     <el-table-column prop="isRead" align="left" label="是否已读(1-已读；2-未读；)"></el-table-column>
+                     <el-table-column prop="isRead" align="left" label="是否已读"></el-table-column>
             <el-table-column align = "center"
                              label="添加时间">
                 <template slot-scope="scope">

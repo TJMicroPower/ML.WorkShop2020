@@ -66,5 +66,23 @@ namespace WorkShop.Xncf.Message.Areas.Admin.Pages.User
                         })
                     });
         }
+
+        public async Task<IActionResult> OnGetSelUserAsync()
+        {
+            var seh = new SenparcExpressionHelper<Models.DatabaseModel.User>();
+            seh.ValueCompare.AndAlso(true, _ => !string.IsNullOrEmpty(_.NickName));
+            var where = seh.BuildWhereExpression();
+            var response = await _userService.GetObjectListAsync(0, 0, where, "AddTime Desc");
+            return Ok(new
+            {
+                response.TotalCount,
+                response.PageIndex,
+                List = response.Select(_ => new
+                {
+                    _.Id,
+                    _.NickName
+                })
+            });
+        }
     }
 }
