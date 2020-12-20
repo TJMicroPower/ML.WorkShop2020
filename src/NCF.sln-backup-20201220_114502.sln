@@ -11,6 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Senparc.Core", "Senparc.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkShop.Xncf.Message", "WorkShop.Xncf.Message\WorkShop.Xncf.Message.csproj", "{849FE48C-B164-4BC4-8389-AB13AFE1DD9E}"
 EndProject
+
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Senparc.Utility", "Senparc.Utility\Senparc.Utility.csproj", "{1A683FAB-A012-4CC5-B1B7-388CDF5DE8A7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Senparc.Log", "Senparc.Log\Senparc.Log.csproj", "{64D79F02-D976-40B3-A4F0-8C6E968FDF81}"
